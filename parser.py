@@ -122,7 +122,7 @@ def parse_tracks(url: str, artis_url: str) -> tuple:
         log(f"tracks parsing error while parsing {url}")
         log(f"try to parse track")
         try:
-            parse_track(url)
+            res.append(parse_track(url))
             log(f"trying  is successful")
         except:
             log(f"trying failed")
