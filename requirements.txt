@@ -1,0 +1,5 @@
+tldextract
+requests
+beautifulsoup4
+urllib3
+music_tag
