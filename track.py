@@ -16,7 +16,7 @@ def mk_path(path):
 
 
 def clear_unavailable_symbols(text: str) -> str:
-    return "".join([i for i in text if not (i in r"\/:*?\"<>|+")])
+    return ("".join([i for i in text if not (i in r"\/:*?\"<>|+")])).replace(r"\u200b", "")
 
 
 class Track:
@@ -42,17 +42,26 @@ class Track:
         self.location = location
         self.local_file = ""
 
-    def download(self, location: str = None, localize: bool = False) -> None:
+    def download(self, location: str = None, dl_name: str = None, sort_by_aa: bool = True,
+                 localize: bool = False) -> None:
         """
         :param location:
+        :param dl_name:
+        :param sort_by_aa:
         :param localize: Bandcamp recognize your country by ip
         and may translate title and other data in metadata
         of the track in your language (if artist specified it)
         :return:
         """
         log(f'start downloading {self.artist}-{self.album}-{self.title}')
-        path = f'{location if location else self.location}/{clear_unavailable_symbols(self.artist)}/{clear_unavailable_symbols(self.album)}/'
-        file_name = clear_unavailable_symbols(f'{self.artist} - {self.title}.mp3')
+        if sort_by_aa:
+            path = f'{location if location else self.location}/' \
+                   f'{clear_unavailable_symbols(self.artist)}/{clear_unavailable_symbols(self.album)}/'
+        else:
+            path = f'{location if location else self.location}/'
+        file_name = dl_name if dl_name else clear_unavailable_symbols(f'{self.artist} - {self.title}.mp3')
+        if len(file_name) >= 140:
+            file_name = file_name[0:140]
         mk_path(path)
         with open(path + file_name, "wb") as f:
             f.write(get_url_content(self.files[list(self.files.keys())[-1]]))

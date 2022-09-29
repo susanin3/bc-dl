@@ -1,3 +1,4 @@
+import datetime
 from urllib.parse import urlparse
 import re
 import json as js
@@ -9,11 +10,31 @@ from track import Track
 from logs import log
 
 
+def dtn_int() -> str:
+    return "".join([i for i in str(datetime.datetime.now()) if i.isdigit()])
+
+
+def is_url_valid(url: str) -> bool:
+    """
+
+    :param url:
+    :return: bool
+    """
+    subdomain = tldextract.extract(url).subdomain
+    url = urlparse(url)
+    netloc = url.netloc
+    path = url.path
+    if subdomain and any((not path.split("/") or path == "", "album" in path.split("/")[0: 2],
+                          "track" in path.split("/")[0: 2])) and 'bandcamp' in netloc:
+        return True
+    return False
+
+
 def get_url_type(url: str) -> str | None:
     """
 
     :param url:
-    :return: artist|
+    :return: artist|album|track|None
     """
     subdomain = tldextract.extract(url).subdomain
     url = urlparse(url)
@@ -93,10 +114,21 @@ def parse_tracks(url: str, artis_url: str) -> tuple:
     """
     log('parse tracks starting')
     page = get_page(url)
+    res = []
     log('page got')
     soup = BeautifulSoup(page.text, "html.parser")
-    tracks = soup.find('table', attrs={"id": "track_table"}).find_all('tr', attrs={'class': 'track_row_view linked'})
-    res = []
+    tracks = soup.find('table', attrs={"id": "track_table"})
+    if tracks is None:
+        log(f"tracks parsing error while parsing {url}")
+        log(f"try to parse track")
+        try:
+            parse_track(url)
+            log(f"trying  is successful")
+        except:
+            log(f"trying failed")
+        return tuple(res)
+    else:
+        tracks = tracks.find_all('tr', attrs={'class': 'track_row_view linked'})
     for track in tracks:
         link = track.find('a', href=True)['href']
         res.append(artis_url.rstrip('/') + link)
@@ -115,6 +147,7 @@ def parse_track(url) -> Track:
     soup = BeautifulSoup(page.text, "html.parser")
     script = soup.find('script', attrs={"data-tralbum": True})
     log('script parsed')
+    # print(script)
     data = script.attrs.get('data-tralbum')
     data = js.loads(data)
     log('track data extruding')
@@ -149,8 +182,19 @@ def parse_track_title_album_artist(url: str = None, html: str = None) -> dict | 
         return None
     soup = BeautifulSoup(html, "html.parser")
     name_section = soup.find("div", attrs={"id": "name-section"})
-    album = name_section.find("span", attrs={"class": "fromAlbum"}).text.strip()
-    title = name_section.find("h2", attrs={"class": "trackTitle"}).text.strip()
+
+    album = name_section.find("span", attrs={"class": "fromAlbum"})
+    if album is not None:
+        album = album.text.strip()
+    else:
+        # album = f"unknown album - {dtn_int()}"
+        album = f"unknown album"
+
+    title = name_section.find("h2", attrs={"class": "trackTitle"})
+    if title is not None:
+        title = title.text.strip()
+    else:
+        title = f"untitled - {dtn_int()}"
     band_name = soup.find("p", attrs={"id": "band-name-location"})
     artist = band_name.find("span", attrs={"class": "title"}).text.strip()
     return {"artist": artist, "album": album, "title": title}
