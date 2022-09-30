@@ -43,12 +43,13 @@ class Track:
         self.local_file = ""
 
     def download(self, location: str = None, dl_name: str = None, sort_by_aa: bool = True,
-                 localize: bool = False) -> None:
+                 localize: bool = False, create_lyrics_file: bool = False) -> None:
         """
         :param location:
         :param dl_name:
-        :param sort_by_aa:
+        :param sort_by_aa: sort by artists and albums directories
         :param localize: Bandcamp recognize your country by ip
+        :param create_lyrics_file:
         and may translate title and other data in metadata
         of the track in your language (if artist specified it)
         :return:
@@ -59,18 +60,23 @@ class Track:
                    f'{clear_unavailable_symbols(self.artist)}/{clear_unavailable_symbols(self.album)}/'
         else:
             path = f'{location if location else self.location}/'
-        file_name = dl_name if dl_name else clear_unavailable_symbols(f'{self.artist} - {self.title}.mp3')
+        file_name = dl_name if dl_name else clear_unavailable_symbols(f'{self.artist} - {self.title}')
+        extension = ".mp3"
         if len(file_name) >= 140:
             file_name = file_name[0:140]
         mk_path(path)
-        with open(path + file_name, "wb") as f:
+        with open(f"{path}{file_name}{extension}", "wb") as f:
             f.write(get_url_content(self.files[list(self.files.keys())[-1]]))
 
+        if create_lyrics_file and self.lyrics is not None:
+            with open(f"{path}{file_name}.lrc", "w", encoding="UTF-8") as f:
+                f.write(self.lyrics)
+
         if not localize:
-            f = music_tag.load_file(path + file_name)
+            f = music_tag.load_file(f"{path}{file_name}{extension}")
             f['artist'] = self.artist
             f['album'] = self.album
             f['title'] = self.title
             f.save()
-        self.local_file = path + file_name
+        self.local_file = f"{path}{file_name}{extension}"
         log(f'downloaded')
