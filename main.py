@@ -63,4 +63,3 @@ if __name__ == '__main__':
     else:
         main()
     pass
-    # main('https://radostmoja.bandcamp.com')

@@ -150,7 +150,7 @@ def parse_track(url) -> Track:
     lyrics = trackinfo['lyrics']
     files = trackinfo['file']
     log(f'track data extruded: {artist=}; {album=}; {title=}')
-    # will work too:
+    # also work:
     # artist = data['artist']
     # title = trackinfo['title']
     return Track(url=url, artist=artist, album=album, title=title, lyrics=lyrics, files=files)
@@ -190,11 +190,4 @@ def parse_track_title_album_artist(url: str = None, html: str = None) -> dict | 
 
 
 if __name__ == '__main__':
-    pass
-    # print(extract_artist_url('https://radostmoja.bandcamp.com/album/suitsid'))
-    # print(parse_tracks('https://radostmoja.bandcamp.com/album/suitsid'))
-    # print(parse_albums('https://radostmoja.bandcamp.com/'))
-    # t = parse_track("https://radostmoja.bandcamp.com/track/zerkalo-polina-adovskaja")
-    # get_url_type('https://radostmoja.bandcamp.com/')
-    # print(parse_track("https://radostmoja.bandcamp.com/track/begi-tuda-gde-net-nikogo"))
-    # print(parse_track_title_album_artist("https://radostmoja.bandcamp.com/track/begi-tuda-gde-net-nikogo"))
+    ...
