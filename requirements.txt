@@ -1,5 +1,7 @@
-tldextract
-requests
-beautifulsoup4
+tldextract~=3.1.2
+requests~=2.25.1
+beautifulsoup4~=4.10.0
 urllib3
 music_tag
+
+PyQt5~=5.15.6

@@ -16,7 +16,7 @@ def mk_path(path):
 
 
 def clear_unavailable_symbols(text: str) -> str:
-    return ("".join([i for i in text if not (i in r"\/:*?\"<>|+")])).replace(r"\u200b", "")
+    return ("".join([i for i in text if not (i in "\/:*?\"<>|+")])).replace("​", "")
 
 
 class Track:
@@ -80,3 +80,7 @@ class Track:
             f.save()
         self.local_file = f"{path}{file_name}{extension}"
         log(f'downloaded')
+
+
+if __name__ == '__main__':
+    ...

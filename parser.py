@@ -1,13 +1,14 @@
 import datetime
-from urllib.parse import urlparse
-import re
 import json as js
+from urllib.parse import urlparse
+
 import requests
-from bs4 import BeautifulSoup
 import requests as req
 import tldextract
-from track import Track
+from bs4 import BeautifulSoup
+
 from logs import log
+from track import Track
 
 
 def dtn_int() -> str:

@@ -1,10 +1,7 @@
-import tldextract
-from urllib.parse import urlparse
+import argparse
 
 import logs
 import parser
-from track import Track
-import argparse
 
 
 def main():
@@ -18,8 +15,6 @@ def main():
                 t.download(create_lyrics_file=CREATE_LYRICS_FILE, sort_by_aa=SORT)
 
 
-# print("!!!!!", args.u)
-
 if __name__ == '__main__':
     arpar = argparse.ArgumentParser(description='Bandcamp music downloader')
     arpar.add_argument('-u', type=str, help='Url of the artist|album|track', required=False)
@@ -28,8 +23,11 @@ if __name__ == '__main__':
     arpar.add_argument('-l', type=str, help='Location of downloaded files. '
                                             'The music files will be sorted into folders of artists and albums.',
                        required=False)
-    arpar.add_argument('-t', type=str, help='Create lyrics file. 1 - create, 0 - don\'t create, default - 0', required=False)
-    arpar.add_argument('-s', type=str, help='Don\'t sort by artists and albums directories. 1 - sort, 0 - don\'t sort, default - 0', required=False)
+    arpar.add_argument('-t', type=str, help='Create lyrics file. 1 - create, 0 - don\'t create, default - 0',
+                       required=False)
+    arpar.add_argument('-s', type=str,
+                       help='Don\'t sort by artists and albums directories. 1 - sort, 0 - don\'t sort, default - 0',
+                       required=False)
     args = arpar.parse_args()
     URLS = []
     LOCATION = None
