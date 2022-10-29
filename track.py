@@ -16,7 +16,7 @@ def mk_path(path):
 
 
 def clear_unavailable_symbols(text: str) -> str:
-    return ("".join([i for i in text if not (i in "\/:*?\"<>|+")])).replace("​", "")
+    return ("".join([i for i in text if not (i in "\/:*?\"<>|+")])).replace("​", "")  # replacing unavailable symbols and ZWSP
 
 
 class Track:
@@ -54,19 +54,23 @@ class Track:
         of the track in your language (if artist specified it)
         :return:
         """
+        self.artist = clear_unavailable_symbols(self.artist)
+        self.album = clear_unavailable_symbols(self.album)
+        self.title = clear_unavailable_symbols(self.title)
+
         log(f'start downloading {self.artist}-{self.album}-{self.title}')
         if sort_by_aa:
             path = f'{location if location else self.location}/' \
-                   f'{clear_unavailable_symbols(self.artist)}/{clear_unavailable_symbols(self.album)}/'
+                   f'{self.artist}/{self.album}/'
         else:
             path = f'{location if location else self.location}/'
-        file_name = dl_name if dl_name else clear_unavailable_symbols(f'{self.artist} - {self.title}')
+        file_name = dl_name if dl_name else f'{self.artist} - {self.title}'
         extension = ".mp3"
         if len(file_name) >= 140:
             file_name = file_name[0:140]
         mk_path(path)
         with open(f"{path}{file_name}{extension}", "wb") as f:
-            f.write(get_url_content(self.files[list(self.files.keys())[-1]]))
+            f.write(get_url_content(self.get_best_file()))
 
         if create_lyrics_file and self.lyrics is not None:
             with open(f"{path}{file_name}.lrc", "w", encoding="UTF-8") as f:
@@ -80,6 +84,9 @@ class Track:
             f.save()
         self.local_file = f"{path}{file_name}{extension}"
         log(f'downloaded')
+
+    def get_best_file(self):
+        return self.files[list(self.files.keys())[-1]]
 
 
 if __name__ == '__main__':

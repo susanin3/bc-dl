@@ -5,3 +5,5 @@ urllib3
 music_tag
 
 PyQt5~=5.15.6
+aiogram~=2.19
+bs4~=0.0.1
